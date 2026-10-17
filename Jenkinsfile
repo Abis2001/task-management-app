@@ -11,26 +11,35 @@ pipeline {
         stage('git clone') {
             steps {
                 git branch: 'dev', url: 'https://github.com/Abis2001/task-management-app.git'
+
+            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
             }
         }
         stage('docker network') {
             steps {
                 sh 'docker network create $DOCKER_NETWORK || true'
+                            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
+
             }
         }
         stage('build frontend') {
             steps {
                 sh 'docker build -t ${FRONTEND_IMAGE}:latest ./frontend'
+                            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
+
             }
         }
-        stage('docker build backend') {
+        stage('build backend') {
             steps {
                 sh 'docker build -t ${BACKEND_IMAGE}:latest ./Backend'
+                            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
+
             }
         }
-        stage('docker build database') {
+        stage('build database') {
             steps {
                 sh 'docker build -t ${MYSQL_IMAGE}:latest ./db'
+                            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
             }
         }
         stage('deploy frontend') {
@@ -43,6 +52,8 @@ pipeline {
                 -p 80:80 \
                 "$FRONTEND_IMAGE:latest"
                 '''
+                            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
+
             }
         }
        stage('deploybackend') {
@@ -55,6 +66,7 @@ pipeline {
                 -p 3000:3000 \
                 "$BACKEND_IMAGE:latest"
                 '''
+                            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
             }
         }
         stage('deploy database') {
@@ -67,6 +79,8 @@ pipeline {
                             -v dbdata:/var/lib/mysql \
                             -p 3306:3306 \
                             "$MYSQL_IMAGE:latest"'
+                                        echo '--------------------------------------------------------------------------------------------------------------------------------------------'
+
             }
         }
         stage('docker login') {
@@ -74,6 +88,8 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
                 }
+                            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
+
             }
         }
         stage('docker push') {
@@ -84,6 +100,7 @@ pipeline {
                 sh 'docker push $DOCKER_USERNAME/${FRONTEND_IMAGE}:latest'
                 sh 'docker push $DOCKER_USERNAME/${BACKEND_IMAGE}:latest'
                 sh 'docker push $DOCKER_USERNAME/${MYSQL_IMAGE}:latest'
+                            echo '--------------------------------------------------------------------------------------------------------------------------------------------'            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
             }
         }
     }
