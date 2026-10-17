@@ -71,16 +71,16 @@ pipeline {
         }
         stage('deploy database') {
             steps {
-                sh ' docker run -d \
-                            --name mysql-task \
-                            --network "$DOCKER_NETWORK" \
-                            -e MYSQL_ROOT_PASSWORD=root \
-                            -e MYSQL_DATABASE=taskdb \
-                            -v dbdata:/var/lib/mysql \
-                            -p 3306:3306 \
-                            "$MYSQL_IMAGE:latest"'
-                                        echo '--------------------------------------------------------------------------------------------------------------------------------------------'
-
+        sh '''
+            docker start mysql-task || docker run -d \
+                --name mysql-task \
+                --network "$DOCKER_NETWORK" \
+                -e MYSQL_ROOT_PASSWORD=root \
+                -e MYSQL_DATABASE=taskdb \
+                -v dbdata:/var/lib/mysql \
+                -p 3306:3306 \
+                "$MYSQL_IMAGE:latest"
+                '''
             }
         }
         stage('docker login') {
