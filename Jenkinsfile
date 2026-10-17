@@ -56,7 +56,7 @@ pipeline {
 
             }
         }
-       stage('deploybackend') {
+        stage('deploybackend') {
             steps {
         sh '''
             docker rm -f task-management-backend 2>/dev/null || true
@@ -72,15 +72,25 @@ pipeline {
         stage('deploy database') {
             steps {
         sh '''
-            docker start mysql-task || docker run -d \
-                --name mysql-task \
-                --network "$DOCKER_NETWORK" \
-                -e MYSQL_ROOT_PASSWORD=root \
-                -e MYSQL_DATABASE=taskdb \
-                -v dbdata:/var/lib/mysql \
-                -p 3306:3306 \
-                "$MYSQL_IMAGE:latest"
-                '''
+            if docker container inspect mysql-task >/dev/null 2>&1; then
+                echo "MySQL container already exists. Reusing it."
+
+                docker start mysql-task || true
+
+                docker network connect "$DOCKER_NETWORK" mysql-task 2>/dev/null || true
+            else
+                echo "Creating MySQL container."
+
+                docker run -d \
+                    --name mysql-task \
+                    --network "$DOCKER_NETWORK" \
+                    -e MYSQL_ROOT_PASSWORD=root \
+                    -e MYSQL_DATABASE=taskdb \
+                    -v dbdata:/var/lib/mysql \
+                    -p 3306:3306 \
+                    "$MYSQL_IMAGE:latest"
+                fi
+            '''
             }
         }
         stage('docker login') {
