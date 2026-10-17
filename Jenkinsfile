@@ -80,16 +80,16 @@ pipeline {
                 sh 'docker push $DOCKER_USERNAME/${MYSQL_IMAGE}:latest'
             }
         }
-        post{
-            success {
-                echo 'Pipeline completed successfully!'
+    }
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
             }
-            failure {
-                echo 'Pipeline failed!'
+        failure {
+            echo 'Pipeline failed!'
             }
-            always {
-                echo 'Pipeline finished.'
-            }
+        always {
+            echo 'Pipeline finished.'
         }
     }
-}
+} 
