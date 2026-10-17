@@ -11,8 +11,8 @@ pipeline {
         stage('git clone') {
             steps {
                 git branch: 'dev', url: 'https://github.com/Abis2001/task-management-app.git'
-                }
             }
+        }
         stage('docker network') {
             steps {
                 sh 'docker network create $DOCKER_NETWORK || true'
@@ -35,21 +35,27 @@ pipeline {
         }
         stage('deploy frontend') {
             steps {
-                sh   'docker run -d \
-                        --name task-management-frontend \
-                        --network "$DOCKER_NETWORK" \
-                        -p 80:80 \
-                        "$FRONTEND_IMAGE:latest '
+        sh '''
+            docker rm -f task-management-frontend 2>/dev/null || true
+            docker run -d \
+                --name task-management-frontend \
+                --network "$DOCKER_NETWORK" \
+                -p 80:80 \
+                "$FRONTEND_IMAGE:latest"
+                '''
             }
         }
-        stage('deploybackend') {
+       stage('deploybackend') {
             steps {
-                sh '  docker run -d \
-                        --name task-management-backend \
-                        --network "$DOCKER_NETWORK" \
-                        -p 3000:3000 \
-                        "$BACKEND_IMAGE:latest'
-             }
+        sh '''
+            docker rm -f task-management-backend 2>/dev/null || true
+            docker run -d \
+                --name task-management-backend \
+                --network "$DOCKER_NETWORK" \
+                -p 3000:3000 \
+                "$BACKEND_IMAGE:latest"
+                '''
+            }
         }
         stage('deploy database') {
             steps {
@@ -60,7 +66,7 @@ pipeline {
                             -e MYSQL_DATABASE=taskdb \
                             -v dbdata:/var/lib/mysql \
                             -p 3306:3306 \
-                            "$MYSQL_IMAGE:latest'
+                            "$MYSQL_IMAGE:latest"'
             }
         }
         stage('docker login') {
