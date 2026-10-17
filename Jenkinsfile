@@ -100,7 +100,6 @@ pipeline {
                 sh 'docker push $DOCKER_USERNAME/${FRONTEND_IMAGE}:latest'
                 sh 'docker push $DOCKER_USERNAME/${BACKEND_IMAGE}:latest'
                 sh 'docker push $DOCKER_USERNAME/${MYSQL_IMAGE}:latest'
-                            echo '--------------------------------------------------------------------------------------------------------------------------------------------'            echo '--------------------------------------------------------------------------------------------------------------------------------------------'
             }
         }
     }
