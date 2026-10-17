@@ -13,7 +13,6 @@ pipeline {
                 git branch: 'dev', url: 'https://github.com/Abis2001/task-management-app.git'
                 }
             }
-        }
         stage('docker network') {
             steps {
                 sh 'docker network create $DOCKER_NETWORK || true'
@@ -93,4 +92,4 @@ pipeline {
             }
         }
     }
-}   
+}
